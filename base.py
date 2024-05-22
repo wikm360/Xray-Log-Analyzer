@@ -5,6 +5,7 @@ import json
 
 user_list = {"default":"0"}
 user_phone =  {"default" : ["0"  , "1"]}
+inbound_user  = ["default"]
 p_user = ["default"]
 line_str  =  " "
 before_ip = "0.0.0.0"
@@ -28,23 +29,24 @@ with open (path_log , "r") as file :
             user = re.findall(pattern, line)[0]
             user = user.split(".")[1].split("\n")[0]
             line = line.split(" ")
+
+            for pice in line :
+                line_str += " " + pice
+            
             if line[2] == "DNS" : 
                 continue
             if user not in user_list :
                 user_list[user]  = 0
             if user not in user_list : 
                 with open (f"{path_user}{user}.txt"  , "w") as user_log :
-                    user_log.writelines(line)
+                    user_log.writelines(line_str)
             else  :
                 with open (f"{path_user}{user}.txt"  , "a") as user_log :
-                    user_log.writelines(line)
+                    user_log.writelines(line_str)
             user_list[user] = line[0] + " " +  line[1]
             count += 1
 
-            print(count)
 
-            for pice in line :
-                line_str += " " + pice
             
             #porn detection :
             pattern_porn = r"\b\w*\s*porn\s*\w*\b"
@@ -77,8 +79,13 @@ with open (path_log , "r") as file :
                 if "apple" not in user_phone[f"{user}"] :
                     user_phone[f"{user}"].append("apple")
 
-
-
+            # specific inbound detector  :
+            inbound_pattern = re.search(r"VMESS\s+\+\s+TCP", line_str, flags=re.IGNORECASE)
+            if inbound_pattern:
+                if user not in inbound_user :
+                    inbound_user.append(user)
+            
+            print(count)
 
             # port scan detection : 
             # ip_port = line[2]
@@ -101,15 +108,18 @@ with open (path_log , "r") as file :
     json_data = json.dumps(user_list)
     p_data =  json.dumps(p_user)
     phone_data = json.dumps(user_phone)
+    inbound_data = json.dumps(inbound_user)
     with open (file_path , "w") as file : 
         file.writelines(json_data)
     with open (f"{path}p_user.txt" , "w" , encoding="utf-8") as file :
-        print(p_user)
         file.writelines(p_data)
     with open (f"{path}phone_user.txt" , "w" , encoding="utf-8") as file :
-        print(p_user)
         file.writelines(phone_data)
+    with open (f"{path}inbound_specific.txt" , "w" , encoding="utf-8") as file :
+        file.writelines(inbound_data)
+
     print(user_list)
+
 
 
     

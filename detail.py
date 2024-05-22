@@ -1,4 +1,4 @@
-path_log = "/home/wikmgg/Documents/GitHub/test.log"
+path_log = "/home/wikmgg/Documents/GitHub/access.log"
 path_user = "/home/wikmgg/Documents/GitHub/user/"
 path = "/home/wikmgg/Documents/GitHub/"
 chat_id = "############"
