@@ -1,4 +1,5 @@
-path_log = "/home/wikm/Documents/GitHub/test.log"
-path_user = "/home/wikm/Documents/GitHub/"
+path_log = "/home/wikmgg/Documents/GitHub/test.log"
+path_user = "/home/wikmgg/Documents/GitHub/user/"
+path = "/home/wikmgg/Documents/GitHub/"
 chat_id = "############"
 token = "######################################"
