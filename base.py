@@ -1,4 +1,4 @@
-from detail import path_log , path_user , path  , token , chat_id
+from detail import path_log , path_user , path  , token , chat_id  , origin_path_log
 import os
 import re
 import json
@@ -7,26 +7,69 @@ from pytz import timezone
 import time
 import requests
 import shutil
+import psutil
 
-user_list = {"default":"0"}
-user_phone =  {"default" : ["0"  , "1"]}
-inbound_user  = ["default"]
-p_user = ["default"]
-line_str  =  " "
-before_ip = "0.0.0.0"
-before_port = "0"
+CPU_THRESHOLD = 50
+RAM_THRESHOLD = 50
 
-def delete_file (user):
-        file_path = f"{path_user}{user}.txt"
-        # Check if the file exists before attempting to delete it
-        if os.path.exists(file_path):
-            # Delete the file
+def get_cpu_usage():
+    return psutil.cpu_percent(interval=1)  # Get CPU usage over 1 second interval
+
+def get_ram_usage():
+    mem = psutil.virtual_memory()
+    return mem.percent  # Get RAM usage percentage
+
+def clear_originfile_def () : 
+    with open(origin_path_log , "w") :
+        pass
+    analize()
+
+def copy_def () :
+    source_path = origin_path_log
+    destination_path = path_log
+    try:
+        shutil.copy2(source_path, destination_path)
+        print(f"File '{source_path}' copied successfully to '{destination_path}'.")
+    except FileNotFoundError:
+        print(f"Error: File '{source_path}' not found.")
+    except PermissionError:
+        print(f"Error: Insufficient permission to copy the file.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+    clear_originfile_def()
+
+def send_telegram_message(message):
+    requests.get("https://api.telegram.org/bot" + token + "/sendMessage" + "?chat_id=" + chat_id + "&text=" + message)
+
+def delete_file (file_path):
+    if os.path.isfile(file_path):
+        try:
             os.remove(file_path)
-            print("File deleted successfully.")
-        else:
-            print("The file does not exist.")
+            print(f"Deleted file: {file_path}")
+        except OSError as e:
+            print(f"Error deleting {file_path}: {e}")
+    else:
+        print(f"File '{file_path}' not found in '{file_path}'.")
+
+def send_single_file (file_path) :
+    url = f"https://api.telegram.org/bot{token}/sendDocument"
+    files = {'document': open(file_path, 'rb')}
+    data = {'chat_id': chat_id}
+    response = requests.get(url, files=files, data=data)
+    if response.status_code == 200:
+        print("File sent successfully.")
+    else:
+        print(f"Failed to send file. Status code: {response.status_code}")
+        print(response.text)
 
 def analize () :
+    user_list = {"default":"0"}
+    user_phone =  {"default" : ["0"  , "1"]}
+    inbound_user  = ["default"]
+    p_user = ["default"]
+    line_str  =  " "
+    before_ip = "0.0.0.0"
+    before_port = "0"
     count = 0
     with open (path_log , "r") as file :
         for line in file :
@@ -124,6 +167,8 @@ def analize () :
 
         print(user_list)
 
+        send_def()
+
 def send_def () :
     source_dir = path_user
     output_filename = path + "user"
@@ -134,71 +179,69 @@ def send_def () :
     shutil.make_archive(output_filename, 'zip', source_dir)
 
     file_path = './user.zip'
-
-    url = f"https://api.telegram.org/bot{token}/sendDocument"
-    files = {'document': open(file_path, 'rb')}
-    data = {'chat_id': chat_id}
-    
-    response = requests.get(url, files=files, data=data)
-    if response.status_code == 200:
-        print("File sent successfully.")
-    else:
-        print(f"Failed to send file. Status code: {response.status_code}")
-        print(response.text)
+    send_single_file(file_path)
 
     file_path = './inbound_specific.txt'
-    response = requests.get(url, files=files, data=data)
-    if response.status_code == 200:
-        print("File sent successfully.")
-    else:
-        print(f"Failed to send file. Status code: {response.status_code}")
-        print(response.text)
+    send_single_file(file_path)
 
     file_path = './last_online_per_user.txt'
-    response = requests.get(url, files=files, data=data)
-    if response.status_code == 200:
-        print("File sent successfully.")
-    else:
-        print(f"Failed to send file. Status code: {response.status_code}")
-        print(response.text)
+    send_single_file(file_path)
 
     file_path = './phone_user.txt'
-    response = requests.get(url, files=files, data=data)
-    if response.status_code == 200:
-        print("File sent successfully.")
-    else:
-        print(f"Failed to send file. Status code: {response.status_code}")
-        print(response.text)
+    send_single_file(file_path)
     
     file_path = './porn_detection.txt'
-    response = requests.get(url, files=files, data=data)
-    if response.status_code == 200:
-        print("File sent successfully.")
-    else:
-        print(f"Failed to send file. Status code: {response.status_code}")
-        print(response.text)
+    try :
+        send_single_file(file_path)
+    except :
+        pass
 
     file_path = './p_user.txt'
-    response = requests.get(url, files=files, data=data)
-    if response.status_code == 200:
-        print("File sent successfully.")
-    else:
-        print(f"Failed to send file. Status code: {response.status_code}")
-        print(response.text)
+    send_single_file(file_path)
 
-    
+    file_path = "./access.log"
+    send_single_file(file_path)
+
+    clear_def()
+  
 def clear_def() :
     # هرچی توی پوشه یوزر هست پاک یشه
+    for filename in os.listdir(path_user):
+        file_path = os.path.join(path_user, filename)
+        if os.path.isfile(file_path):  # Check if it's a file
+            try:
+                os.remove(file_path)
+                print(f"Deleted file: {filename}")
+            except OSError as e:
+                print(f"Error deleting {filename}: {e}")
+    
     # تک تک تکست های آنالیز پاک بشن
+    delete_file("./inbound_specific.txt")
+    delete_file("./last_online_per_user.txt")
+    delete_file("./phone_user.txt")
+    delete_file("./porn_detection.txt")
+    delete_file("./p_user.txt")
+
     # فایل اصلی لاگ کپی شده اینجا هم  پاک بشه
-    pass
+    delete_file("./access.log")
+    delete_file("./user.zip")
+
 
 def main() :
     #analize()
-    schedule.every().day.at("23:30" , timezone("Asia/Tehran")).do(analize)
-    schedule.every().day.at("23:50" , timezone("Asia/Tehran")).do(send_def)
+    schedule.every().day.at("23:32" , timezone("Asia/Tehran")).do(copy_def)
     while True :
         schedule.run_pending()
+        cpu_usage = get_cpu_usage()
+        ram_usage = get_ram_usage()
+
+        if cpu_usage > CPU_THRESHOLD:
+            message = f"CPU usage exceeded threshold: {cpu_usage}%"
+            send_telegram_message(message)
+
+        if ram_usage > RAM_THRESHOLD:
+            message = f"RAM usage exceeded threshold: {ram_usage}%"
+            send_telegram_message(message)
         time.sleep(1)
 
 

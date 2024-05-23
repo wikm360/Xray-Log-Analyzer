@@ -18,7 +18,7 @@ def get_ram_usage():
     mem = psutil.virtual_memory()
     return mem.percent  # Get RAM usage percentage
 
-def clear_def () : 
+def clear_originfile_def () : 
     with open(origin_path_log , "w") :
         pass
 
@@ -39,7 +39,7 @@ def send_telegram_message(message):
     requests.get("https://api.telegram.org/bot" + token + "/sendMessage" + "?chat_id=" + chat_id + "&text=" + message)
 def main() :
     schedule.every().day.at("23:00" , timezone("Asia/Tehran")).do(copy_def)
-    schedule.every().day.at("23:15" , timezone("Asia/Tehran")).do(clear_def)
+    schedule.every().day.at("23:15" , timezone("Asia/Tehran")).do(clear_originfile_def)
     while True :
         schedule.run_pending()
         cpu_usage = get_cpu_usage()
