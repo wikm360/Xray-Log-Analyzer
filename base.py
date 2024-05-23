@@ -1,7 +1,12 @@
-from detail import path_log , path_user , path
+from detail import path_log , path_user , path  , token , chat_id
 import os
 import re
 import json
+import schedule
+from pytz import timezone
+import time
+import requests
+import shutil
 
 user_list = {"default":"0"}
 user_phone =  {"default" : ["0"  , "1"]}
@@ -20,106 +25,181 @@ def delete_file (user):
             print("File deleted successfully.")
         else:
             print("The file does not exist.")
-count = 0
-with open (path_log , "r") as file :
-    for line in file :
-        pattern = r"email: (\S+)"
-        #if user in line :
-        if re.findall(pattern, line) :
-            user = re.findall(pattern, line)[0]
-            user = user.split(".")[1].split("\n")[0]
-            line = line.split(" ")
 
-            for pice in line :
-                line_str += " " + pice
-            
-            if line[2] == "DNS" : 
-                continue
-            if user not in user_list :
-                user_list[user]  = 0
-            if user not in user_list : 
-                with open (f"{path_user}{user}.txt"  , "w") as user_log :
-                    user_log.writelines(line_str)
-            else  :
-                with open (f"{path_user}{user}.txt"  , "a") as user_log :
-                    user_log.writelines(line_str)
-            user_list[user] = line[0] + " " +  line[1]
-            count += 1
+def analize () :
+    count = 0
+    with open (path_log , "r") as file :
+        for line in file :
+            pattern = r"email: (\S+)"
+            #if user in line :
+            if re.findall(pattern, line) :
+                user = re.findall(pattern, line)[0]
+                user = user.split(".")[1].split("\n")[0]
+                line = line.split(" ")
 
-
-            
-            #porn detection :
-            pattern_porn = r"\b\w*\s*porn\s*\w*\b"
-            if re.findall(pattern_porn, line_str):
-                with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
-                    file.writelines(line_str)
-                if user not in p_user :
-
-                    p_user.append(user)
+                for pice in line :
+                    line_str += " " + pice
                 
-            # phone detection : 
-            xiaomi_pattern =  r"\b\w*\s*xiaomi\s*\w*\b"
-            samsung_pattern  = r"\b\w*\s*samsung\s*\w*\b"
-            apple_pattern = r"\b\w*\s*gsp\s*\w*\b"
-            if re.findall(xiaomi_pattern, line_str):
-                if user not in user_phone :
-                    user_phone[f"{user}"] = ["0"]
-                if "xiaomi" not in user_phone[f"{user}"] :
-                    user_phone[f"{user}"].append("xiaomi")
+                if line[2] == "DNS" : 
+                    continue
+                if user not in user_list :
+                    user_list[user]  = 0
+                if user not in user_list : 
+                    with open (f"{path_user}{user}.txt"  , "w") as user_log :
+                        user_log.writelines(line_str)
+                else  :
+                    with open (f"{path_user}{user}.txt"  , "a") as user_log :
+                        user_log.writelines(line_str)
+                user_list[user] = line[0] + " " +  line[1]
+                count += 1
+
+
+                
+                #porn detection :
+                pattern_porn = r"\b\w*\s*porn\s*\w*\b"
+                if re.findall(pattern_porn, line_str):
+                    with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
+                        file.writelines(line_str)
+                    if user not in p_user :
+
+                        p_user.append(user)
+                    
+                # phone detection : 
+                xiaomi_pattern =  r"\b\w*\s*xiaomi\s*\w*\b"
+                samsung_pattern  = r"\b\w*\s*samsung\s*\w*\b"
+                apple_pattern = r"\b\w*\s*gsp\s*\w*\b"
+                if re.findall(xiaomi_pattern, line_str):
+                    if user not in user_phone :
+                        user_phone[f"{user}"] = ["0"]
+                    if "xiaomi" not in user_phone[f"{user}"] :
+                        user_phone[f"{user}"].append("xiaomi")
+                
+                if re.findall(samsung_pattern, line_str):
+                    if user not in user_phone :
+                        user_phone[f"{user}"] = ["0"]
+                    if "samsung" not in user_phone[f"{user}"] :
+                        user_phone[f"{user}"].append("samsung")
+                
+                if re.findall(apple_pattern, line_str):
+                    if user not in user_phone :
+                        user_phone[f"{user}"] = ["0"]
+                    if "apple" not in user_phone[f"{user}"] :
+                        user_phone[f"{user}"].append("apple")
+
+                # specific inbound detector  :
+                inbound_pattern = re.search(r"VMESS\s+\+\s+TCP", line_str, flags=re.IGNORECASE)
+                if inbound_pattern:
+                    if user not in inbound_user :
+                        inbound_user.append(user)
+                
+                print(count)
+
+                # port scan detection : 
+                # ip_port = line[2]
+                # ip = ip_port.split(":")[0]
+                # port = ip_port.split(":")[1]
+                # if ip == before_ip :
+                #     if port != before_port : 
+                #         file_path = f"{path_user}port_scan_detection.txt"
+                #         with open(file_path , "a") as file : 
+                #             file.writelines(line_str)
+
+                line_str = " "
             
-            if re.findall(samsung_pattern, line_str):
-                if user not in user_phone :
-                    user_phone[f"{user}"] = ["0"]
-                if "samsung" not in user_phone[f"{user}"] :
-                    user_phone[f"{user}"].append("samsung")
             
-            if re.findall(apple_pattern, line_str):
-                if user not in user_phone :
-                    user_phone[f"{user}"] = ["0"]
-                if "apple" not in user_phone[f"{user}"] :
-                    user_phone[f"{user}"].append("apple")
-
-            # specific inbound detector  :
-            inbound_pattern = re.search(r"VMESS\s+\+\s+TCP", line_str, flags=re.IGNORECASE)
-            if inbound_pattern:
-                if user not in inbound_user :
-                    inbound_user.append(user)
             
-            print(count)
+        file_path = f"{path}last_online_per_user.txt"
+        json_data = json.dumps(user_list)
+        p_data =  json.dumps(p_user)
+        phone_data = json.dumps(user_phone)
+        inbound_data = json.dumps(inbound_user)
+        with open (file_path , "w") as file : 
+            file.writelines(json_data)
+        with open (f"{path}p_user.txt" , "w" , encoding="utf-8") as file :
+            file.writelines(p_data)
+        with open (f"{path}phone_user.txt" , "w" , encoding="utf-8") as file :
+            file.writelines(phone_data)
+        with open (f"{path}inbound_specific.txt" , "w" , encoding="utf-8") as file :
+            file.writelines(inbound_data)
 
-            # port scan detection : 
-            # ip_port = line[2]
-            # ip = ip_port.split(":")[0]
-            # port = ip_port.split(":")[1]
-            # if ip == before_ip :
-            #     if port != before_port : 
-            #         file_path = f"{path_user}port_scan_detection.txt"
-            #         with open(file_path , "a") as file : 
-            #             file.writelines(line_str)
+        print(user_list)
 
+def send_def () :
+    source_dir = path_user
+    output_filename = path + "user"
+    # Ensure the source directory exists
+    if not os.path.isdir(source_dir):
+        raise ValueError(f"Source directory '{source_dir}' does not exist.")
+    # Create the zip file
+    shutil.make_archive(output_filename, 'zip', source_dir)
 
-            ##در ادامه بعد از ارسال فایل های دسته بندی شده در تلگرام باید حتما پاک بشن
-            # delete_file(user)
-            line_str = " "
-        
-        
-        
-    file_path = f"{path}last_online_per_user.txt"
-    json_data = json.dumps(user_list)
-    p_data =  json.dumps(p_user)
-    phone_data = json.dumps(user_phone)
-    inbound_data = json.dumps(inbound_user)
-    with open (file_path , "w") as file : 
-        file.writelines(json_data)
-    with open (f"{path}p_user.txt" , "w" , encoding="utf-8") as file :
-        file.writelines(p_data)
-    with open (f"{path}phone_user.txt" , "w" , encoding="utf-8") as file :
-        file.writelines(phone_data)
-    with open (f"{path}inbound_specific.txt" , "w" , encoding="utf-8") as file :
-        file.writelines(inbound_data)
+    file_path = './user.zip'
 
-    print(user_list)
+    url = f"https://api.telegram.org/bot{token}/sendDocument"
+    files = {'document': open(file_path, 'rb')}
+    data = {'chat_id': chat_id}
+    
+    response = requests.get(url, files=files, data=data)
+    if response.status_code == 200:
+        print("File sent successfully.")
+    else:
+        print(f"Failed to send file. Status code: {response.status_code}")
+        print(response.text)
 
+    file_path = './inbound_specific.txt'
+    response = requests.get(url, files=files, data=data)
+    if response.status_code == 200:
+        print("File sent successfully.")
+    else:
+        print(f"Failed to send file. Status code: {response.status_code}")
+        print(response.text)
 
+    file_path = './last_online_per_user.txt'
+    response = requests.get(url, files=files, data=data)
+    if response.status_code == 200:
+        print("File sent successfully.")
+    else:
+        print(f"Failed to send file. Status code: {response.status_code}")
+        print(response.text)
+
+    file_path = './phone_user.txt'
+    response = requests.get(url, files=files, data=data)
+    if response.status_code == 200:
+        print("File sent successfully.")
+    else:
+        print(f"Failed to send file. Status code: {response.status_code}")
+        print(response.text)
+    
+    file_path = './porn_detection.txt'
+    response = requests.get(url, files=files, data=data)
+    if response.status_code == 200:
+        print("File sent successfully.")
+    else:
+        print(f"Failed to send file. Status code: {response.status_code}")
+        print(response.text)
+
+    file_path = './p_user.txt'
+    response = requests.get(url, files=files, data=data)
+    if response.status_code == 200:
+        print("File sent successfully.")
+    else:
+        print(f"Failed to send file. Status code: {response.status_code}")
+        print(response.text)
 
     
+def clear_def() :
+    # هرچی توی پوشه یوزر هست پاک یشه
+    # تک تک تکست های آنالیز پاک بشن
+    # فایل اصلی لاگ کپی شده اینجا هم  پاک بشه
+    pass
+
+def main() :
+    #analize()
+    schedule.every().day.at("23:30" , timezone("Asia/Tehran")).do(analize)
+    schedule.every().day.at("23:50" , timezone("Asia/Tehran")).do(send_def)
+    while True :
+        schedule.run_pending()
+        time.sleep(1)
+
+
+main()
