@@ -10,7 +10,9 @@ What does this bot do?
 3) classification users log per user 
 4) specific inbound detection for users
 5) clear old logs
-and more features coming 🔜 ....
+6) CPU threshold alarm
+7) RAM threshold alarm
+and more features coming 🔜
 
 ## Prerequisites
 
