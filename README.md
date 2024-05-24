@@ -1,7 +1,7 @@
 
 # Xray-Log-Analyzer
 
-Xray-Log-Analyzer By wikm
+Created by wikm with ❤️
 
 
 ## Prerequisites
