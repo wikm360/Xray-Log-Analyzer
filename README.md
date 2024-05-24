@@ -32,7 +32,7 @@ First, download and extract the project with the following command :
 ## Change Variable 
 
 ```bash
-  nano databasedetail.py
+  nano detail.py
 ```
 change variables with your own ...
 
