@@ -3,6 +3,14 @@
 
 Created by wikm with ❤️
 
+What does this bot do?
+1) analyze the xray log every day and send to you with telegram bot
+2) user phone detection
+2) porn detection
+3) classification users log per user 
+4) specific inbound detection for users
+5) clear old logs
+and more features coming 🔜 ....
 
 ## Prerequisites
 
