@@ -12,7 +12,8 @@ What does this bot do?
 5) clear old logs
 6) CPU threshold alarm
 7) RAM threshold alarm
-*) and more features coming 🔜
+
+more features coming 🔜
 
 ## Prerequisites
 
