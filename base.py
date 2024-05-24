@@ -106,6 +106,27 @@ def analize () :
                     if user not in p_user :
 
                         p_user.append(user)
+                pattern_porn = r"\b\w*\s*xnxx\s*\w*\b"
+                if re.findall(pattern_porn, line_str):
+                    with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
+                        file.writelines(line_str)
+                    if user not in p_user :
+
+                        p_user.append(user)
+                pattern_porn = r"\b\w*\s*xvideos\s*\w*\b"
+                if re.findall(pattern_porn, line_str):
+                    with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
+                        file.writelines(line_str)
+                    if user not in p_user :
+
+                        p_user.append(user)
+                pattern_porn = r"\b\w*\s*sex\s*\w*\b"
+                if re.findall(pattern_porn, line_str):
+                    with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
+                        file.writelines(line_str)
+                    if user not in p_user :
+
+                        p_user.append(user)
                     
                 # phone detection : 
                 xiaomi_pattern =  r"\b\w*\s*xiaomi\s*\w*\b"
