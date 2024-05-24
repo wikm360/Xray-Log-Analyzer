@@ -1,4 +1,4 @@
-from detail import path_log , path_user , path  , token , chat_id  , origin_path_log
+from detail import path_log , path_user , path  , token , chat_id  , origin_path_log ,  cpu_threshold , ram_threshold
 import os
 import re
 import json
@@ -9,8 +9,8 @@ import requests
 import shutil
 import psutil
 
-CPU_THRESHOLD = 50
-RAM_THRESHOLD = 50
+CPU_THRESHOLD = cpu_threshold
+RAM_THRESHOLD = ram_threshold
 
 def get_cpu_usage():
     return psutil.cpu_percent(interval=1)  # Get CPU usage over 1 second interval
@@ -229,7 +229,7 @@ def clear_def() :
 
 def main() :
     #analize()
-    schedule.every().day.at("23:32" , timezone("Asia/Tehran")).do(copy_def)
+    schedule.every().day.at("12:00" , timezone("Asia/Tehran")).do(copy_def)
     while True :
         schedule.run_pending()
         cpu_usage = get_cpu_usage()
