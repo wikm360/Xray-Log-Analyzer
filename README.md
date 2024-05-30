@@ -34,6 +34,7 @@ Before installing the required libraries, you must first install Python and pip
   pip install re
   pip install os
   pip install collections
+  pip mysql-connector-python
 ```
 ## Get
 
