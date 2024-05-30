@@ -6,14 +6,14 @@ Created by wikm with ❤️
 What does this bot do?
 1) analyze the xray log every day and send to you with telegram bot
 2) user phone detection
-2) porn detection
-3) classification users log per user 
-4) specific inbound detection for users
-5) clear old logs
-6) CPU threshold alarm
-7) RAM threshold alarm
-8) ulr list per user
-9) most ulr used per user
+3) porn detection
+4) classification users log per user 
+5) specific inbound detection for users
+6) clear old logs
+7) CPU threshold alarm
+8) RAM threshold alarm
+9) ulr list per user
+10) most ulr used per user
 
 more features coming 🔜
 
