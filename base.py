@@ -1,4 +1,4 @@
-from detail import path_log , path_user , path  , token , chat_id  , origin_path_log ,  cpu_threshold , ram_threshold
+from detail import path_log , path_user , path  , token , chat_id  , origin_path_log ,  cpu_threshold , ram_threshold  , user_sql , password , host , database
 import os
 import re
 import json
@@ -9,6 +9,7 @@ import requests
 import shutil
 import psutil
 from collections import Counter
+import mysql.connector
 
 CPU_THRESHOLD = cpu_threshold
 RAM_THRESHOLD = ram_threshold
@@ -64,6 +65,7 @@ def send_single_file (file_path) :
         print(response.text)
 
 def analize () :
+    user_usage  =  {"default" : "0"}
     url_user_list = ["default"]
     user_list = {"default":"0"}
     user_phone =  {"default" : ["0"  , "1"]}
@@ -222,9 +224,65 @@ def analize () :
     with open (f"{path}inbound_specific.txt" , "w" , encoding="utf-8") as file :
         file.writelines(inbound_data)
 
+    #user usage : 
+
+        #read old data from file :
+    old_data = {}
+    if os.path.isfile(f"{path}user_usage.txt"):
+        with open (f"{path}user_usage.txt" , "r") as file : 
+            old_data = json.load(file)
+
+
+    user_usage  =  {"default" : "0"}
+
+    db = mysql.connector.connect(user=user_sql, password=password,
+                                host=host , database = database)
+
+    for u in url_user_list : 
+        if u != "default" :
+            cursor = db.cursor()
+
+            query = f"SELECT used_traffic FROM users where username = '{u}'"
+            ## getting records from the table
+            cursor.execute(query)
+            ## fetching all records from the 'cursor' object
+            records = cursor.fetchall()
+            r = records[0][0]
+            user_usage[u] = f"{r}"
+            time.sleep(5)
+    print(user_usage)
+    #rewrite file :
+    user_usage_json =  json.dumps(user_usage)
+    with open (f"{path}user_usage.txt" , "w") as file :
+        file.writelines(user_usage_json)
+
+    #calculate diffrence and  create :
+    if old_data :
+        difference = {"default" : "0"}
+        for n in url_user_list :
+            if n != "default" :
+                try :
+                    new = int(user_usage[n]) - int(old_data[n])
+                    difference[n] = new
+                except :
+                    pass
+        print(difference)
+
+        #calculate the max usage :
+        max_usage  = max(difference.values())
+        for name, usage in difference.items():
+            if usage == str(max_usage):
+                mess = f"The most usage person is {name} with {usage} ."
+                print(mess)
+                send_telegram_message(mess)
+    else :
+        print("First time and no diffrence ....")
+        send_telegram_message("First time and no diffrence ....")
+
+
     print(user_list)
 
-    #mos used url per user : 
+    #most used url per user : 
     for u in url_user_list :
         if u == "default" :
             continue
@@ -266,6 +324,12 @@ def send_def () :
     send_single_file(file_path)
     
     file_path = './porn_detection.txt'
+    try :
+        send_single_file(file_path)
+    except :
+        pass
+
+    file_path = './user_usage.txt'
     try :
         send_single_file(file_path)
     except :

@@ -14,6 +14,8 @@ What does this bot do?
 8) RAM threshold alarm
 9) ulr list per user
 10) most ulr used per user
+11) calculate and send The most used user 
+12) send users usage
 
 more features coming 🔜
 
