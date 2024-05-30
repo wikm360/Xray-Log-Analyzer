@@ -161,7 +161,7 @@ def analize () :
                                         xiaomi_pattern =  r"\b\w*\s*xiaomi\s*\w*\b"
                                         samsung_pattern  = r"\b\w*\s*samsung\s*\w*\b"
                                         apple_pattern = r"\b\w*\s*gsp\s*\w*\b"
-                                        huawei_pattern = r"\b\w*\s*grs.dbankcloud\s*\w*\b"
+                                        huawei_pattern = r"\b\w*\s*dbankcloud\s*\w*\b"
                                         if re.findall(xiaomi_pattern, line_str):
                                             if user not in user_phone :
                                                 user_phone[f"{user}"] = ["0"]
@@ -307,7 +307,7 @@ def clear_def() :
 
 def main() :
     #analize()
-    schedule.every().day.at("12:00" , timezone("Asia/Tehran")).do(copy_def)
+    schedule.every().day.at("04:00" , timezone("Asia/Tehran")).do(copy_def)
     while True :
         schedule.run_pending()
         cpu_usage = get_cpu_usage()
