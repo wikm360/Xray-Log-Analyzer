@@ -12,6 +12,8 @@ What does this bot do?
 5) clear old logs
 6) CPU threshold alarm
 7) RAM threshold alarm
+8) ulr list per user
+9) most ulr used per user
 
 more features coming 🔜
 
@@ -29,6 +31,7 @@ Before installing the required libraries, you must first install Python and pip
   pip install json
   pip install re
   pip install os
+  pip install collections
 ```
 ## Get
 
