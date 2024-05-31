@@ -11,7 +11,7 @@ cpu_threshold = 75
 ram_threshold = 80
 #database variable :
 user_sql="root"
-password="1234567890",
+password="1234567890"
 host="127.0.0.1"
 database = "marzban"
 ############################################################

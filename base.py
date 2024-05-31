@@ -106,7 +106,7 @@ def analize () :
                                         user_list[user] = line[0] + " " +  line[1]
                                         count += 1
                                         #create url list request per user:
-                                        if "[" in  line :
+                                        if "[" in  line[4] :
                                             url = line[4].split("[")[1].split("]")[0]
                                         else :
                                             url = str(line[4].split(":")[1])
@@ -135,28 +135,27 @@ def analize () :
                                             with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
                                                 file.writelines(line_str)
                                             if user not in p_user :
-
                                                 p_user.append(user)
+                                        
                                         pattern_porn = r"\b\w*\s*xnxx\s*\w*\b"
                                         if re.findall(pattern_porn, line_str):
                                             with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
                                                 file.writelines(line_str)
                                             if user not in p_user :
-
                                                 p_user.append(user)
+                                        
                                         pattern_porn = r"\b\w*\s*xvideos\s*\w*\b"
                                         if re.findall(pattern_porn, line_str):
                                             with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
                                                 file.writelines(line_str)
                                             if user not in p_user :
-
                                                 p_user.append(user)
+
                                         pattern_porn = r"\b\w*\s*sex\s*\w*\b"
                                         if re.findall(pattern_porn, line_str):
                                             with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
                                                 file.writelines(line_str)
                                             if user not in p_user :
-
                                                 p_user.append(user)
                                             
                                         # phone detection : 
@@ -284,21 +283,20 @@ def analize () :
 
     #most used url per user : 
     for u in url_user_list :
-        if u == "default" :
-            continue
-        with open(f"./user/{u}_url.txt", "r") as f:
-        # Read the file content
-            content = f.read()
-        # Convert text to lowercase and split into urls
-        urls = content.lower().split("\n")
-        # Create a Counter object to count urls frequency
-        url_count = Counter(urls)
-        # Find the most common url and its count
-        most_used_word, count = url_count.most_common(1)[0]
-        # Print the most used url
-        mess  = f"The most used URL is '{most_used_word}' (found {count} times) for {u}."
-        print(mess)
-        send_telegram_message(mess)
+        if u != "default" :
+            with open(f"./user/{u}_url.txt", "r") as f:
+            # Read the file content
+                content = f.read()
+            # Convert text to lowercase and split into urls
+            urls = content.lower().split("\n")
+            # Create a Counter object to count urls frequency
+            url_count = Counter(urls)
+            # Find the most common url and its count
+            most_used_word, count = url_count.most_common(1)[0]
+            # Print the most used url
+            mess  = f"The most used URL is '{most_used_word}' (found {count} times) for {u}."
+            print(mess)
+            send_telegram_message(mess)
 
     send_def()
 
