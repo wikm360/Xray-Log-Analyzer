@@ -77,6 +77,7 @@ def analize () :
     count = 0
     with open (path_log , "r") as file :
         for line in file :
+            count += 1
             pattern = r"email: (\S+)"
             #if user in line :
             if re.findall(pattern, line) :
@@ -86,128 +87,129 @@ def analize () :
                             if "dns.google" not in line :
                                 if "8.8.8.8" not in line :
                                     if "gstatic"  not in line : 
-                                        user = re.findall(pattern, line)[0]
-                                        user = user.split(".")[1].split("\n")[0]
-                                        line = line.split(" ")
+                                        if "10.10.34" not in line :
+                                            if "1.0.0.1" not in line :
+                                                user = re.findall(pattern, line)[0]
+                                                user = user.split(".")[1].split("\n")[0]
+                                                line = line.split(" ")
 
-                                        for pice in line :
-                                            line_str += " " + pice
-                                        
-                                        if line[2] == "DNS" : 
-                                            continue
-                                        if user not in user_list :
-                                            user_list[user]  = 0
-                                        if user not in user_list : 
-                                            with open (f"{path_user}{user}.txt"  , "w") as user_log :
-                                                user_log.writelines(line_str)
-                                        else  :
-                                            with open (f"{path_user}{user}.txt"  , "a") as user_log :
-                                                user_log.writelines(line_str)
-                                        user_list[user] = line[0] + " " +  line[1]
-                                        count += 1
-                                        #create url list request per user:
-                                        if "[" in  line[4] :
-                                            url = line[4].split("[")[1].split("]")[0]
-                                        else :
-                                            url = str(line[4].split(":")[1])
-                                        #print(url)
-                                        if user not in url_user_list : 
-                                            with open (f"{path_user}{user}_url.txt"  , "w") as file :
-                                                file.writelines("default")
-                                                url_user_list.append(user)
+                                                for pice in line :
+                                                    line_str += " " + pice
+                                                
+                                                if line[2] == "DNS" : 
+                                                    continue
+                                                if user not in user_list :
+                                                    user_list[user]  = 0
+                                                if user not in user_list : 
+                                                    with open (f"{path_user}{user}.txt"  , "w") as user_log :
+                                                        user_log.writelines(line_str)
+                                                else  :
+                                                    with open (f"{path_user}{user}.txt"  , "a") as user_log :
+                                                        user_log.writelines(line_str)
+                                                user_list[user] = line[0] + " " +  line[1]
+                                                
+                                                #create url list request per user:
+                                                if "[" in  line[4] :
+                                                    url = line[4].split("[")[1].split("]")[0]
+                                                else :
+                                                    url = str(line[4].split(":")[1])
+                                                #print(url)
+                                                if user not in url_user_list : 
+                                                    url_user_list.append(user)
+                                                    with open (f"{path_user}{user}_url.txt"  , "w") as file :
+                                                        file.writelines("default")
 
-                                        else  :
-                                            with open (f"{path_user}{user}_url.txt"  , "r") as file :
-                                                with open (f"{path_user}{user}_url.txt"  , "a") as file_2 :
-                                                    for line_url in file :
-                                                        if url in line_url :
-                                                            flag  = True
-                                                        else :
-                                                            flag = False
-                                                    if flag == False:
-                                                        file_2.writelines("\n")
-                                                        file_2.writelines(url)
+                                                else  :
+                                                    with open (f"{path_user}{user}_url.txt"  , "r") as file :
+                                                        with open (f"{path_user}{user}_url.txt"  , "a") as file_2 :
+                                                            for line_url in file :
+                                                                if url in line_url :
+                                                                    flag  = True
+                                                                else :
+                                                                    flag = False
+                                                            if flag == False:
+                                                                file_2.writelines("\n")
+                                                                file_2.writelines(url)
 
-                                        
-                                        #porn detection :
-                                        pattern_porn = r"\b\w*\s*porn\s*\w*\b"
-                                        if re.findall(pattern_porn, line_str):
-                                            with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
-                                                file.writelines(line_str)
-                                            if user not in p_user :
-                                                p_user.append(user)
-                                        
-                                        pattern_porn = r"\b\w*\s*xnxx\s*\w*\b"
-                                        if re.findall(pattern_porn, line_str):
-                                            with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
-                                                file.writelines(line_str)
-                                            if user not in p_user :
-                                                p_user.append(user)
-                                        
-                                        pattern_porn = r"\b\w*\s*xvideos\s*\w*\b"
-                                        if re.findall(pattern_porn, line_str):
-                                            with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
-                                                file.writelines(line_str)
-                                            if user not in p_user :
-                                                p_user.append(user)
+                                                
+                                                #porn detection :
+                                                pattern_porn = r"\b\w*\s*porn\s*\w*\b"
+                                                if re.findall(pattern_porn, line_str):
+                                                    with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
+                                                        file.writelines(line_str)
+                                                    if user not in p_user :
+                                                        p_user.append(user)
+                                                
+                                                pattern_porn = r"\b\w*\s*xnxx\s*\w*\b"
+                                                if re.findall(pattern_porn, line_str):
+                                                    with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
+                                                        file.writelines(line_str)
+                                                    if user not in p_user :
+                                                        p_user.append(user)
+                                                
+                                                pattern_porn = r"\b\w*\s*xvideos\s*\w*\b"
+                                                if re.findall(pattern_porn, line_str):
+                                                    with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
+                                                        file.writelines(line_str)
+                                                    if user not in p_user :
+                                                        p_user.append(user)
 
-                                        pattern_porn = r"\b\w*\s*sex\s*\w*\b"
-                                        if re.findall(pattern_porn, line_str):
-                                            with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
-                                                file.writelines(line_str)
-                                            if user not in p_user :
-                                                p_user.append(user)
-                                            
-                                        # phone detection : 
-                                        xiaomi_pattern =  r"\b\w*\s*xiaomi\s*\w*\b"
-                                        samsung_pattern  = r"\b\w*\s*samsung\s*\w*\b"
-                                        apple_pattern = r"\b\w*\s*gsp\s*\w*\b"
-                                        huawei_pattern = r"\b\w*\s*dbankcloud\s*\w*\b"
-                                        if re.findall(xiaomi_pattern, line_str):
-                                            if user not in user_phone :
-                                                user_phone[f"{user}"] = ["0"]
-                                            if "xiaomi" not in user_phone[f"{user}"] :
-                                                user_phone[f"{user}"].append("xiaomi")
-                                        
-                                        if re.findall(samsung_pattern, line_str):
-                                            if user not in user_phone :
-                                                user_phone[f"{user}"] = ["0"]
-                                            if "samsung" not in user_phone[f"{user}"] :
-                                                user_phone[f"{user}"].append("samsung")
-                                        
-                                        if re.findall(apple_pattern, line_str):
-                                            if user not in user_phone :
-                                                user_phone[f"{user}"] = ["0"]
-                                            if "apple" not in user_phone[f"{user}"] :
-                                                user_phone[f"{user}"].append("apple")
+                                                pattern_porn = r"\b\w*\s*sex\s*\w*\b"
+                                                if re.findall(pattern_porn, line_str):
+                                                    with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
+                                                        file.writelines(line_str)
+                                                    if user not in p_user :
+                                                        p_user.append(user)
+                                                    
+                                                # phone detection : 
+                                                xiaomi_pattern =  r"\b\w*\s*xiaomi\s*\w*\b"
+                                                samsung_pattern  = r"\b\w*\s*samsung\s*\w*\b"
+                                                apple_pattern = r"\b\w*\s*gsp\s*\w*\b"
+                                                huawei_pattern = r"\b\w*\s*dbankcloud\s*\w*\b"
+                                                if re.findall(xiaomi_pattern, line_str):
+                                                    if user not in user_phone :
+                                                        user_phone[f"{user}"] = ["0"]
+                                                    if "xiaomi" not in user_phone[f"{user}"] :
+                                                        user_phone[f"{user}"].append("xiaomi")
+                                                
+                                                if re.findall(samsung_pattern, line_str):
+                                                    if user not in user_phone :
+                                                        user_phone[f"{user}"] = ["0"]
+                                                    if "samsung" not in user_phone[f"{user}"] :
+                                                        user_phone[f"{user}"].append("samsung")
+                                                
+                                                if re.findall(apple_pattern, line_str):
+                                                    if user not in user_phone :
+                                                        user_phone[f"{user}"] = ["0"]
+                                                    if "apple" not in user_phone[f"{user}"] :
+                                                        user_phone[f"{user}"].append("apple")
 
-                                        if re.findall(huawei_pattern, line_str):
-                                            if user not in user_phone :
-                                                user_phone[f"{user}"] = ["0"]
-                                            if "huawei" not in user_phone[f"{user}"] :
-                                                user_phone[f"{user}"].append("huawei")
-                                        
-                                        # specific inbound detector  :
-                                        inbound_pattern = re.search(r"VMESS\s+\+\s+TCP", line_str, flags=re.IGNORECASE)
-                                        if inbound_pattern:
-                                            if user not in inbound_user :
-                                                inbound_user.append(user)
-                                        
-                                        print(count)
+                                                if re.findall(huawei_pattern, line_str):
+                                                    if user not in user_phone :
+                                                        user_phone[f"{user}"] = ["0"]
+                                                    if "huawei" not in user_phone[f"{user}"] :
+                                                        user_phone[f"{user}"].append("huawei")
+                                                
+                                                # specific inbound detector  :
+                                                inbound_pattern = re.search(r"VMESS\s+\+\s+TCP", line_str, flags=re.IGNORECASE)
+                                                if inbound_pattern:
+                                                    if user not in inbound_user :
+                                                        inbound_user.append(user)
+                                                
 
-                                        # port scan detection : 
-                                        # ip_port = line[2]
-                                        # ip = ip_port.split(":")[0]
-                                        # port = ip_port.split(":")[1]
-                                        # if ip == before_ip :
-                                        #     if port != before_port : 
-                                        #         file_path = f"{path_user}port_scan_detection.txt"
-                                        #         with open(file_path , "a") as file : 
-                                        #             file.writelines(line_str)
+                                                # port scan detection : 
+                                                # ip_port = line[2]
+                                                # ip = ip_port.split(":")[0]
+                                                # port = ip_port.split(":")[1]
+                                                # if ip == before_ip :
+                                                #     if port != before_port : 
+                                                #         file_path = f"{path_user}port_scan_detection.txt"
+                                                #         with open(file_path , "a") as file : 
+                                                #             file.writelines(line_str)
 
-                                        line_str = " "
+                                                line_str = " "
             
-            
+            print(count)
             
     file_path = f"{path}last_online_per_user.txt"
     json_data = json.dumps(user_list)
@@ -282,6 +284,7 @@ def analize () :
     print(user_list)
 
     #most used url per user : 
+    print(url_user_list)
     for u in url_user_list :
         if u != "default" :
             with open(f"./user/{u}_url.txt", "r") as f:
@@ -364,7 +367,7 @@ def clear_def() :
     # فایل اصلی لاگ کپی شده اینجا هم  پاک بشه
     delete_file("./access.log")
     delete_file("./user.zip")
-    send_telegram_message("Done...Created by @wikm360 with ❤️ ....")
+    send_telegram_message("Done...Created by @wikm360 with ❤️...V2.0")
 
 
 def main() :
