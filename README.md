@@ -15,7 +15,7 @@ What does this bot do?
 9) ulr list per user
 10) most ulr used per user
 11) calculate and send The most used user 
-12) send users usage
+12) send users usage ( get with mysql and marzban API )
 
 more features coming 🔜
 
@@ -41,7 +41,7 @@ Before installing the required libraries, you must first install Python and pip
 First, download and extract the project with the following command :
 
 ```bash
-  wget https://github.com/wikm360/Xray-Log-Analyzer/releases/download/V2.0/Xray-Log-Analyzer.zip
+  wget https://github.com/wikm360/Xray-Log-Analyzer/releases/download/V2.1/Xray-Log-Analyzer.zip
   unzip Xray-Log-Analyzer.zip -d /root/Xray-Log-Analyzer
   cd Xray-Log-Analyzer/
 ```
