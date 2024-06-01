@@ -14,6 +14,9 @@ user_sql="root"
 password="1234567890"
 host="127.0.0.1"
 database = "marzban"
+type_of_get_usage = "api_marzban" # "mysql" or "api_marzban" 
+Authorization_api = " "  # Example = "Bearer ey###########"
+marzban_pane_url = "many.wikmgg.ir:2096" # Example = "sub.panel.com:2096"
 ############################################################
 
 path_log = f"{path}access.log"

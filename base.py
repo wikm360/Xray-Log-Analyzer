@@ -1,4 +1,4 @@
-from detail import path_log , path_user , path  , token , chat_id  , origin_path_log ,  cpu_threshold , ram_threshold  , user_sql , password , host , database
+from detail import path_log , path_user , path  , token , chat_id  , origin_path_log ,  cpu_threshold , ram_threshold  , user_sql , password , host , database , type_of_get_usage , Authorization_api ,  marzban_pane_url
 import os
 import re
 import json
@@ -85,7 +85,7 @@ def analize () :
                     if "mtalk.google.com" not in line :
                         if "android.apis.google.com" not in line :
                             if "dns.google" not in line :
-                                if "8.8.8.8" not in line :
+                                if "8.8." not in line :
                                     if "gstatic"  not in line : 
                                         if "10.10.34" not in line :
                                             if "1.0.0.1" not in line :
@@ -241,16 +241,25 @@ def analize () :
 
     for u in url_user_list : 
         if u != "default" :
-            cursor = db.cursor()
+            if type_of_get_usage == "mysql" :
+                cursor = db.cursor()
 
-            query = f"SELECT used_traffic FROM users where username = '{u}'"
-            ## getting records from the table
-            cursor.execute(query)
-            ## fetching all records from the 'cursor' object
-            records = cursor.fetchall()
-            r = records[0][0]
-            user_usage[u] = f"{r}"
-            time.sleep(5)
+                query = f"SELECT used_traffic FROM users where username = '{u}'"
+                ## getting records from the table
+                cursor.execute(query)
+                ## fetching all records from the 'cursor' object
+                records = cursor.fetchall()
+                r = records[0][0]
+                user_usage[u] = f"{r}"
+                time.sleep(5)
+            if type_of_get_usage == "api_marzban" :
+                url = f"https://{marzban_pane_url}/api/user/{u}/usage"
+                dict = {"accept" : "application/json" , "Authorization" : f"{Authorization_api}"}
+                resault = requests.get(url,headers=dict)
+                data = json.loads(resault.text)
+                usage = data["usages"][0]["used_traffic"]
+                user_usage[u] = usage
+                time.sleep(5)
     print(user_usage)
     #rewrite file :
     user_usage_json =  json.dumps(user_usage)
