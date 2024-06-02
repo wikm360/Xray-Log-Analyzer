@@ -163,6 +163,7 @@ def analize () :
                     xiaomi_pattern =  r"\b\w*\s*xiaomi\s*\w*\b"
                     samsung_pattern  = r"\b\w*\s*samsung\s*\w*\b"
                     apple_pattern = r"\b\w*\s*gsp\s*\w*\b"
+                    apple_pattern_2 = r"\b\w*\s*apple\s*\w*\b"
                     huawei_pattern = r"\b\w*\s*dbankcloud\s*\w*\b"
                     if re.findall(xiaomi_pattern, line_str):
                         if user not in user_phone :
@@ -177,10 +178,11 @@ def analize () :
                             user_phone[f"{user}"].append("samsung")
                     
                     if re.findall(apple_pattern, line_str):
-                        if user not in user_phone :
-                            user_phone[f"{user}"] = ["0"]
-                        if "apple" not in user_phone[f"{user}"] :
-                            user_phone[f"{user}"].append("apple")
+                        if re.findall(apple_pattern_2 , line) :
+                            if user not in user_phone :
+                                user_phone[f"{user}"] = ["0"]
+                            if "apple" not in user_phone[f"{user}"] :
+                                user_phone[f"{user}"].append("apple")
 
                     if re.findall(huawei_pattern, line_str):
                         if user not in user_phone :
@@ -231,17 +233,14 @@ def analize () :
         with open (f"{path}user_usage.txt" , "r") as file : 
             old_data = json.load(file)
 
-
     user_usage  =  {"default" : "0"}
 
-    db = mysql.connector.connect(user=user_sql, password=password,
-                                host=host , database = database)
-
-    for u in url_user_list : 
-        if u != "default" :
-            if type_of_get_usage == "mysql" :
-                cursor = db.cursor()
-
+    if type_of_get_usage == "mysql" :
+        db = mysql.connector.connect(user=user_sql, password=password,
+                        host=host , database = database)
+        cursor = db.cursor()
+        for u in url_user_list : 
+            if u != "default" :
                 query = f"SELECT used_traffic FROM users where username = '{u}'"
                 ## getting records from the table
                 cursor.execute(query)
@@ -250,7 +249,9 @@ def analize () :
                 r = records[0][0]
                 user_usage[u] = f"{r}"
                 time.sleep(5)
-            if type_of_get_usage == "api_marzban" :
+    if type_of_get_usage == "api_marzban" :
+        for u in url_user_list : 
+            if u != "default" :
                 url = f"https://{marzban_pane_url}/api/user/{u}/usage"
                 dict = {"accept" : "application/json" , "Authorization" : f"{Authorization_api}"}
                 resault = requests.get(url,headers=dict)
@@ -277,14 +278,14 @@ def analize () :
         print(difference)
 
         #calculate the max usage :
+        if difference["default"] :
+            del(difference["default"])
         max_usage  = max(difference.values())
         for name, usage in difference.items():
-            if usage == str(max_usage):
+            if usage == max_usage:
                 mess = f"The most usage person is {name} with {usage} ."
-                print(mess)
                 send_telegram_message(mess)
     else :
-        print("First time and no diffrence ....")
         send_telegram_message("First time and no diffrence ....")
 
 
@@ -302,9 +303,9 @@ def analize () :
             # Create a Counter object to count urls frequency
             url_count = Counter(urls)
             # Find the most common url and its count
-            most_used_word, count = url_count.most_common(1)[0]
+            most_used_url, count = url_count.most_common(1)[0]
             # Print the most used url
-            mess  = f"The most used URL is '{most_used_word}' (found {count} times) for {u}."
+            mess  = f"The most used URL is '{most_used_url}' (found {count} times) for {u}."
             print(mess)
             send_telegram_message(mess)
 
@@ -374,7 +375,7 @@ def clear_def() :
     # فایل اصلی لاگ کپی شده اینجا هم  پاک بشه
     delete_file("./access.log")
     delete_file("./user.zip")
-    send_telegram_message("Done...Created by @wikm360 with ❤️...V2.2")
+    send_telegram_message("Done...Created by @wikm360 with ❤️...V2.5")
 
 
 def main() :
