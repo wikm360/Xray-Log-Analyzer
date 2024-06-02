@@ -249,6 +249,10 @@ def analize () :
                 r = records[0][0]
                 user_usage[u] = f"{r}"
                 time.sleep(5)
+            if db.is_connected():
+                cursor.close()
+                db.close()
+                print("MySQL connection is closed")
     if type_of_get_usage == "api_marzban" :
         for u in url_user_list : 
             if u != "default" :
