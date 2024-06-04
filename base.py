@@ -178,7 +178,7 @@ def analize () :
                             user_phone[f"{user}"].append("samsung")
                     
                     if re.findall(apple_pattern, line_str):
-                        if re.findall(apple_pattern_2 , line) :
+                        if re.findall(apple_pattern_2 , line_str) :
                             if user not in user_phone :
                                 user_phone[f"{user}"] = ["0"]
                             if "apple" not in user_phone[f"{user}"] :
