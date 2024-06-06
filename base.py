@@ -249,10 +249,10 @@ def analize () :
                 r = records[0][0]
                 user_usage[u] = f"{r}"
                 time.sleep(5)
-            if db.is_connected():
-                cursor.close()
-                db.close()
-                print("MySQL connection is closed")
+        if db.is_connected():
+            cursor.close()
+            db.close()
+            print("MySQL connection is closed")
     if type_of_get_usage == "api_marzban" :
         for u in url_user_list : 
             if u != "default" :
@@ -324,35 +324,14 @@ def send_def () :
     # Create the zip file
     shutil.make_archive(output_filename, 'zip', source_dir)
 
-    file_path = './user.zip'
-    send_single_file(file_path)
-
-    file_path = './inbound_specific.txt'
-    send_single_file(file_path)
-
-    file_path = './last_online_per_user.txt'
-    send_single_file(file_path)
-
-    file_path = './phone_user.txt'
-    send_single_file(file_path)
+    send_file_list = ['./user.zip' , './inbound_specific.txt' , './last_online_per_user.txt' , './phone_user.txt' ,
+                      './porn_detection.txt' , './user_usage.txt' ,'./p_user.txt' ,  path_log ]
     
-    file_path = './porn_detection.txt'
-    try :
-        send_single_file(file_path)
-    except :
-        pass
-
-    file_path = './user_usage.txt'
-    try :
-        send_single_file(file_path)
-    except :
-        pass
-
-    file_path = './p_user.txt'
-    send_single_file(file_path)
-
-    file_path = path_log
-    send_single_file(file_path)
+    for file_path in send_file_list :
+        try :
+            send_single_file(file_path)
+        except :
+            pass
     
     time.sleep(15)
 
@@ -370,16 +349,16 @@ def clear_def() :
                 print(f"Error deleting {filename}: {e}")
     
     # تک تک تکست های آنالیز پاک بشن
-    delete_file("./inbound_specific.txt")
-    delete_file("./last_online_per_user.txt")
-    delete_file("./phone_user.txt")
-    delete_file("./porn_detection.txt")
-    delete_file("./p_user.txt")
-
-    # فایل اصلی لاگ کپی شده اینجا هم  پاک بشه
-    delete_file("./access.log")
-    delete_file("./user.zip")
-    send_telegram_message("Done...Created by @wikm360 with ❤️...V2.5")
+    clear_file_list = ["./inbound_specific.txt" , "./last_online_per_user.txt" , "./phone_user.txt" , "./porn_detection.txt" , "./p_user.txt" ,
+                       "./access.log" ,"./user.zip" ]
+    
+    for delete_file in clear_file_list :
+        try :
+            delete_file(delete_file)
+        except :
+            pass
+    
+    send_telegram_message("Done...Created by @wikm360 with ❤️...V2.6")
 
 
 def main() :
