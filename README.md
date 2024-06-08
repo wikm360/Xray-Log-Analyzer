@@ -41,7 +41,7 @@ Before installing the required libraries, you must first install Python and pip
 First, download and extract the project with the following command :
 
 ```bash
-  wget https://github.com/wikm360/Xray-Log-Analyzer/releases/download/V2.6/Xray-Log-Analyzer.zip
+  wget https://github.com/wikm360/Xray-Log-Analyzer/releases/download/V2.7/Xray-Log-Analyzer.zip
   unzip Xray-Log-Analyzer.zip -d /root/Xray-Log-Analyzer
   cd Xray-Log-Analyzer/
 ```
