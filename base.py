@@ -1,4 +1,4 @@
-from detail import path_log , path_user , path  , token , chat_id  , origin_path_log ,  cpu_threshold , ram_threshold  , user_sql , password , host , database , type_of_get_usage , Authorization_api ,  marzban_pane_url , ignore_urls
+from detail import path_log , path_user , path  , token , chat_id  , origin_path_log ,  cpu_threshold , ram_threshold  , user_sql , password , host , database , type_of_get_usage ,  marzban_panel_url , ignore_urls , panel_username , panel_pass
 import os
 import re
 import json
@@ -10,6 +10,7 @@ import shutil
 import psutil
 from collections import Counter
 import mysql.connector
+import urllib.parse
 
 CPU_THRESHOLD = cpu_threshold
 RAM_THRESHOLD = ram_threshold
@@ -254,10 +255,19 @@ def analize () :
             db.close()
             print("MySQL connection is closed")
     if type_of_get_usage == "api_marzban" :
+        pass_Temp = urllib.parse.quote_plus(panel_pass)
+        api_url = f"https://{marzban_panel_url}/api/admin/token"
+        headers_dict = {"accept" : "application/json" , "Content-Type" : "application/x-www-form-urlencoded" }
+        post_data = f"grant_type=&username={panel_username}&password={pass_Temp}&scope=&client_id=&client_secret="
+        post_resault = requests.post(api_url , data=post_data , headers=headers_dict )
+        data = json.loads(post_resault.text)
+        Authorization_api = data["access_token"]
+        pass_Temp = " "
+
         for u in url_user_list : 
             if u != "default" :
-                url = f"https://{marzban_pane_url}/api/user/{u}/usage"
-                dict = {"accept" : "application/json" , "Authorization" : f"{Authorization_api}"}
+                url = f"https://{marzban_panel_url}/api/user/{u}/usage"
+                dict = {"accept" : "application/json" , "Authorization" : f"Bearer {Authorization_api}"}
                 resault = requests.get(url,headers=dict)
                 data = json.loads(resault.text)
                 usage = data["usages"][0]["used_traffic"]
@@ -358,7 +368,7 @@ def clear_def() :
         except :
             pass
     
-    send_telegram_message("Done...Created by @wikm360 with ❤️...V2.6")
+    send_telegram_message("Done...Created by @wikm360 with ❤️...V2.7")
 
 
 def main() :
