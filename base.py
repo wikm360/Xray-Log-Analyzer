@@ -362,9 +362,9 @@ def clear_def() :
     clear_file_list = ["./inbound_specific.txt" , "./last_online_per_user.txt" , "./phone_user.txt" , "./porn_detection.txt" , "./p_user.txt" ,
                        "./access.log" ,"./user.zip" ]
     
-    for delete_file in clear_file_list :
+    for f in clear_file_list :
         try :
-            delete_file(delete_file)
+            delete_file(f)
         except :
             pass
     
