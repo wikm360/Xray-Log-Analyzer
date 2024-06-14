@@ -16,6 +16,8 @@ What does this bot do?
 10) most ulr used per user
 11) calculate and send The most used user 
 12) send users usage ( get with mysql and marzban API )
+13) send most versatile user (in porn sites)
+14) send most thirsty user (in porn sites)
 
 more features coming 🔜
 
@@ -35,6 +37,7 @@ Before installing the required libraries, you must first install Python and pip
   pip install os
   pip install collections
   pip install mysql-connector-python
+  pip install DateTime
 ```
 ## Get
 
