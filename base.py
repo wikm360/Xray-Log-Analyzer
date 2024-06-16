@@ -134,35 +134,7 @@ def analize () :
 
                     
                     #porn detection :
-                    pattern_porn = r"\b\w*\s*porn\s*\w*\b"
-                    if re.findall(pattern_porn, line_str):
-                        with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
-                            file.writelines(line_str)
-                        if user not in p_user :
-                            p_user.append(user)
-                    
-                    pattern_porn = r"\b\w*\s*xnxx\s*\w*\b"
-                    if re.findall(pattern_porn, line_str):
-                        with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
-                            file.writelines(line_str)
-                        if user not in p_user :
-                            p_user.append(user)
-                    
-                    pattern_porn = r"\b\w*\s*xvideos\s*\w*\b"
-                    if re.findall(pattern_porn, line_str):
-                        with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
-                            file.writelines(line_str)
-                        if user not in p_user :
-                            p_user.append(user)
-
-                    pattern_porn = r"\b\w*\s*sex\s*\w*\b"
-                    if re.findall(pattern_porn, line_str):
-                        with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
-                            file.writelines(line_str)
-                        if user not in p_user :
-                            p_user.append(user)
-
-                    pattern_porn = r"\b\w*\s*brazzer\s*\w*\b"
+                    pattern_porn = r"\b\w*\s*(porn|xnxx|xvideos|sex|brazzer|xxx|erotica|hardcore|BDSM|fetish|Nude|NSFW|PNP|CYOC|OnlyFans|camgirl|webcam)\s*\w*\b"
                     if re.findall(pattern_porn, line_str):
                         with open (f"{path}porn_detection.txt" , "a" , encoding="utf-8") as file : 
                             file.writelines(line_str)
@@ -170,35 +142,26 @@ def analize () :
                             p_user.append(user)
                         
                     # phone detection : 
-                    xiaomi_pattern =  r"\b\w*\s*xiaomi\s*\w*\b"
-                    samsung_pattern  = r"\b\w*\s*samsung\s*\w*\b"
+                    pattern = r"\b\w*\s*(xiaomi|samsung|dbankcloud)\s*\w*\b"
+                    matches = re.findall(pattern, line_str)
+                    if matches :
+                        print(matches)
+                        if user not in user_phone:
+                            user_phone[user] = ["0"]
+                        for match in matches:
+                            if match in ["xiaomi", "samsung"] and match not in user_phone[f"{user}"]:
+                                user_phone[user].append(match)
+                            if match == "dbankcloud" and "huawei" not in user_phone[f"{user}"]:
+                                user_phone[user].append("huawei")
+                    
                     apple_pattern = r"\b\w*\s*gsp\s*\w*\b"
                     apple_pattern_2 = r"\b\w*\s*apple\s*\w*\b"
-                    huawei_pattern = r"\b\w*\s*dbankcloud\s*\w*\b"
-                    if re.findall(xiaomi_pattern, line_str):
-                        if user not in user_phone :
-                            user_phone[f"{user}"] = ["0"]
-                        if "xiaomi" not in user_phone[f"{user}"] :
-                            user_phone[f"{user}"].append("xiaomi")
-                    
-                    if re.findall(samsung_pattern, line_str):
-                        if user not in user_phone :
-                            user_phone[f"{user}"] = ["0"]
-                        if "samsung" not in user_phone[f"{user}"] :
-                            user_phone[f"{user}"].append("samsung")
-                    
                     if re.findall(apple_pattern, line_str):
                         if re.findall(apple_pattern_2 , line_str) :
                             if user not in user_phone :
                                 user_phone[f"{user}"] = ["0"]
                             if "apple" not in user_phone[f"{user}"] :
                                 user_phone[f"{user}"].append("apple")
-
-                    if re.findall(huawei_pattern, line_str):
-                        if user not in user_phone :
-                            user_phone[f"{user}"] = ["0"]
-                        if "huawei" not in user_phone[f"{user}"] :
-                            user_phone[f"{user}"].append("huawei")
                     
                     # specific inbound detector  :
                     inbound_pattern = re.search(r"VMESS\s+\+\s+TCP", line_str, flags=re.IGNORECASE)
@@ -206,16 +169,6 @@ def analize () :
                         if user not in inbound_user :
                             inbound_user.append(user)
                     
-
-                    # port scan detection : 
-                    # ip_port = line[2]
-                    # ip = ip_port.split(":")[0]
-                    # port = ip_port.split(":")[1]
-                    # if ip == before_ip :
-                    #     if port != before_port : 
-                    #         file_path = f"{path_user}port_scan_detection.txt"
-                    #         with open(file_path , "a") as file : 
-                    #             file.writelines(line_str)
 
                     line_str = " "
             
@@ -497,7 +450,9 @@ def clear_def() :
         except :
             pass
     
-    send_telegram_message("Done...Created by @wikm360 with ❤️...V3.0")
+    send_telegram_message('''🇩​​🇴​​🇳​​🇪​ 
+< ​🇨​​🇷​​🇪​​🇦​​🇹​​🇪​​🇩​ ​🇧​​🇾​ @wikm360 ​🇼​​🇮​​🇹​​🇭​ ❤️ > 
+​🇻​3️⃣.4️⃣''')
 
 
 def main() :

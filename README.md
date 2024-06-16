@@ -16,8 +16,9 @@ What does this bot do?
 10) most ulr used per user
 11) calculate and send The most used user 
 12) send users usage ( get with mysql and marzban API )
-13) send most versatile user (in porn sites)
-14) send most thirsty user (in porn sites)
+13) send user who has the most request in shortest time (versatile person) (in porn sites)
+14) send user who spend the longest period in one domain (thirsty person) (in porn sites)
+15) detect suspicious Domains and IPs and report by telegram
 
 more features coming 🔜
 
@@ -44,7 +45,7 @@ Before installing the required libraries, you must first install Python and pip
 First, download and extract the project with the following command :
 
 ```bash
-  wget https://github.com/wikm360/Xray-Log-Analyzer/releases/download/V2.7/Xray-Log-Analyzer.zip
+  wget https://github.com/wikm360/Xray-Log-Analyzer/releases/latest/download/Xray-Log-Analyzer.zip
   unzip Xray-Log-Analyzer.zip -d /root/Xray-Log-Analyzer
   cd Xray-Log-Analyzer/
 ```
