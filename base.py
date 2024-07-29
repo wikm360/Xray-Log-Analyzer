@@ -286,31 +286,30 @@ def analize () :
             send_telegram_message(mess)
 
     #versatile person : 
-    log_pattern = re.compile(
-    r'\s{2}(?P<date>\d{4}/\d{2}/\d{2}) (?P<time>\d{2}:\d{2}:\d{2}) (tcp:|udp:)?(?P<source_ip>\[?[\da-fA-F:.]+\]?):\d+ (?P<action>\w+) '
-    r'(tcp|udp):(?P<domain>[\w\.-]+):\d+ \[.*\] email: (?P<user>[\w\.@_]+)'
-)
 
     def parse_log_line(line):
-        match = log_pattern.match(line)
-        if match:
-            date_str = match.group('date')
-            time_str = match.group('time')
-            datetime_str = f"{date_str} {time_str}"
-            log_datetime = datetime.strptime(datetime_str, '%Y/%m/%d %H:%M:%S')
-            
-            domain = match.group('domain')
-            # Check if the domain is a subdomain (has more than two parts)
-            if domain.count('.') > 1:
-                return None
-            
-            return {
-                'datetime': log_datetime,
-                'source_ip': match.group('source_ip').strip('[]'),
-                'action': match.group('action'),
-                'domain': domain,
-                'user': match.group('user')
-            }
+        try :
+            match = log_pattern.match(line)
+            if match:
+                date_str = match.group('date')
+                time_str = match.group('time')
+                datetime_str = f"{date_str} {time_str}"
+                log_datetime = datetime.strptime(datetime_str, '%Y/%m/%d %H:%M:%S')
+                
+                domain = match.group('domain')
+                # Check if the domain is a subdomain (has more than two parts)
+                if domain.count('.') > 1:
+                    return None
+                
+                return {
+                    'datetime': log_datetime,
+                    'source_ip': match.group('source_ip').strip('[]'),
+                    'action': match.group('action'),
+                    'domain': domain,
+                    'user': match.group('user')
+                }
+        except :
+            send_telegram_message("Error in parse log line ...")
         return None
 
     def analyze_versatile(log_lines):
@@ -342,19 +341,24 @@ def analize () :
                     shortest_period = period
 
         return shortest_time_user, shortest_time_domain, max_requests, shortest_period
+    try :
+        log_pattern = re.compile(
+        r'\s{2}(?P<date>\d{4}/\d{2}/\d{2}) (?P<time>\d{2}:\d{2}:\d{2}) (tcp:|udp:)?(?P<source_ip>\[?[\da-fA-F:.]+\]?):\d+ (?P<action>\w+) '
+        r'(tcp|udp):(?P<domain>[\w\.-]+):\d+ \[.*\] email: (?P<user>[\w\.@_]+)'
+)
+        with open(f"{path}porn_detection.txt", 'r') as f:
+            log_lines = f.readlines()
 
-    with open(f"{path}porn_detection.txt", 'r') as f:
-        log_lines = f.readlines()
-
-    result = analyze_versatile(log_lines)
-    if result:
-        user, domain, requests, period = result
-        mess = f"the most versatile person is {user} made the most requests ({requests}) to domain {domain} in the shortest period ({period})."
-        send_telegram_message(mess)
-    else:
-        mess = "No sufficient data found in logs."
-        send_telegram_message(mess)
-
+        result = analyze_versatile(log_lines)
+        if result:
+            user, domain, requests, period = result
+            mess = f"the most versatile person is {user} made the most requests ({requests}) to domain {domain} in the shortest period ({period})."
+            send_telegram_message(mess)
+        else:
+            mess = "No sufficient data found in logs."
+            send_telegram_message(mess)
+    except :
+        send_telegram_message("Erorr in detect versatile user...")
 
     # thirsty person : 
     def analyze_thirsty(log_lines):
@@ -393,17 +397,19 @@ def analize () :
             return None, None, None
         else:
             return longest_time_user, longest_time_domain, longest_period
+    try :
+        with open(f"{path}porn_detection.txt", 'r') as f:
+            log_lines = f.readlines()
 
-    with open(f"{path}porn_detection.txt", 'r') as f:
-        log_lines = f.readlines()
-
-    result_user, result_domain, result_period = analyze_thirsty(log_lines)
-    if result_user:
-        mess = f"The most thirsty person is {result_user} spent the longest period ({result_period}) on main domain {result_domain}."
-        send_telegram_message(mess)
-    else:
-        mess = "No sufficient data found or all users exceeded 3 hours on main domains."
-        send_telegram_message(mess)
+        result_user, result_domain, result_period = analyze_thirsty(log_lines)
+        if result_user:
+            mess = f"The most thirsty person is {result_user} spent the longest period ({result_period}) on main domain {result_domain}."
+            send_telegram_message(mess)
+        else:
+            mess = "No sufficient data found or all users exceeded 3 hours on main domains."
+            send_telegram_message(mess)
+    except :
+        send_telegram_message("Erorr in detect thirsty user ...")
 
     send_def()
 
@@ -452,7 +458,7 @@ def clear_def() :
     
     send_telegram_message('''🇩​​🇴​​🇳​​🇪​ 
 < ​🇨​​🇷​​🇪​​🇦​​🇹​​🇪​​🇩​ ​🇧​​🇾​ @wikm360 ​🇼​​🇮​​🇹​​🇭​ ❤️ > 
-​🇻​3️⃣.4️⃣''')
+​🇻​3️⃣.5️⃣''')
 
 
 def main() :
