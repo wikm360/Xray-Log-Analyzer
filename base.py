@@ -13,6 +13,7 @@ import mysql.connector
 import urllib.parse
 from datetime import datetime , timedelta
 from collections import defaultdict
+import gzip
 
 CPU_THRESHOLD = cpu_threshold
 RAM_THRESHOLD = ram_threshold
@@ -78,6 +79,15 @@ def analize () :
     before_ip = "0.0.0.0"
     before_port = "0"
     count = 0
+    
+    #  user dir check :
+    dir = "user"
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+        print(f"Directory '{dir}' created.")
+    else:
+        print(f"Directory '{dir}' already exists.")
+
     with open (path_log , "r") as file :
         for line in file :
             count += 1
@@ -145,7 +155,6 @@ def analize () :
                     pattern = r"\b\w*\s*(xiaomi|samsung|dbankcloud)\s*\w*\b"
                     matches = re.findall(pattern, line_str)
                     if matches :
-                        print(matches)
                         if user not in user_phone:
                             user_phone[user] = ["0"]
                         for match in matches:
@@ -203,15 +212,18 @@ def analize () :
                         host=host , database = database)
         cursor = db.cursor()
         for u in url_user_list : 
-            if u != "default" :
-                query = f"SELECT used_traffic FROM users where username = '{u}'"
-                ## getting records from the table
-                cursor.execute(query)
-                ## fetching all records from the 'cursor' object
-                records = cursor.fetchall()
-                r = records[0][0]
-                user_usage[u] = f"{r}"
-                time.sleep(5)
+            try:
+                if u != "default" :
+                    query = f"SELECT used_traffic FROM users where username = '{u}'"
+                    ## getting records from the table
+                    cursor.execute(query)
+                    ## fetching all records from the 'cursor' object
+                    records = cursor.fetchall()
+                    r = records[0][0]
+                    user_usage[u] = f"{r}"
+                    time.sleep(5)
+            except :
+                print("Error in fetch records  ...")
         if db.is_connected():
             cursor.close()
             db.close()
@@ -414,6 +426,14 @@ def analize () :
     send_def()
 
 def send_def () :
+    #access.log zip :
+    input_file = f"{path}access.log"
+    output_file = f"{path}access.log.gz"
+    with open(input_file, 'rb') as f_in:
+        with gzip.open(output_file, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    print(f"Compressed {input_file} to {output_file}")
+    
     source_dir = path_user
     output_filename = path + "user"
     # Ensure the source directory exists
@@ -423,7 +443,7 @@ def send_def () :
     shutil.make_archive(output_filename, 'zip', source_dir)
 
     send_file_list = ['./user.zip' , './inbound_specific.txt' , './last_online_per_user.txt' , './phone_user.txt' ,
-                      './porn_detection.txt' , './user_usage.txt' ,'./p_user.txt' ,  path_log ]
+                      './porn_detection.txt' , './user_usage.txt' ,'./p_user.txt' ,  './access.log.gz' ]
     
     for file_path in send_file_list :
         try :
@@ -448,7 +468,7 @@ def clear_def() :
     
     # تک تک تکست های آنالیز پاک بشن
     clear_file_list = ["./inbound_specific.txt" , "./last_online_per_user.txt" , "./phone_user.txt" , "./porn_detection.txt" , "./p_user.txt" ,
-                       "./access.log" ,"./user.zip" ]
+                       "./access.log.gz" ,"./user.zip" , 'access.log' ]
     
     for f in clear_file_list :
         try :
@@ -458,7 +478,7 @@ def clear_def() :
     
     send_telegram_message('''🇩​​🇴​​🇳​​🇪​ 
 < ​🇨​​🇷​​🇪​​🇦​​🇹​​🇪​​🇩​ ​🇧​​🇾​ @wikm360 ​🇼​​🇮​​🇹​​🇭​ ❤️ > 
-​🇻​3️⃣.5️⃣''')
+​🇻​3️⃣.6️⃣''')
 
 
 def main() :

@@ -9,7 +9,7 @@ token = "6386634380:AAGdHDGK3hmoo5vh2IRj3w0Ntgb47XAoZhQ"
 # token = '6386634380:AAGdHDGK3hmoo5vh2IRj3w0Ntgb47XAoZhQ'
 cpu_threshold = 75
 ram_threshold = 80
-type_of_get_usage = "api_marzban" # "mysql" or "api_marzban" 
+type_of_get_usage = "api_marzban" # "mysql" or "api_marzban"  api is better
 # database variable :
 user_sql="root"
 password="1234567890"
