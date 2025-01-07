@@ -4,3 +4,4 @@ detect  port scan.py
 detect Repeated IP Addresses and Ports.py
 detect suspect domain and IPs.py
 test.txt
+test.py

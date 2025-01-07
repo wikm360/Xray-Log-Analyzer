@@ -1,6 +1,6 @@
 ############################################################
 # change this variable with your own :
-path = "/home/wikmgg/Documents/GitHub/Xray-Log-Analyzer/"
+path = r"C:\Users\user\Documents\GitHub\Xray-Log-Analyzer\\"
 #path = "/root/Xray-Log-Analyzer/"
 origin_path_log = "/var/lib/marzban/log/access.log"
 chat_id = "877591460"

@@ -123,7 +123,8 @@ def analize () :
                     if "[" in  line[4] :
                         url = line[4].split("[")[1].split("]")[0]
                     else :
-                        url = str(line[4].split(":")[1])
+                        # print(line)
+                        url = str(line[5].split(":")[1])
                     #print(url)
                     if user not in url_user_list : 
                         url_user_list.append(user)
@@ -481,9 +482,13 @@ def clear_def() :
 ​🇻​3️⃣.6️⃣''')
 
 
-def main() :
+def main(type , cycle = "04:00") :
     #analize()
-    schedule.every().day.at("04:00" , timezone("Asia/Tehran")).do(copy_def)
+    if type == "now" :
+        copy_def()
+    elif type == "timing" :
+        schedule.every().day.at(f"{cycle}" , timezone("Asia/Tehran")).do(copy_def)
+    # analize()
     while True :
         schedule.run_pending()
         cpu_usage = get_cpu_usage()
@@ -498,5 +503,3 @@ def main() :
             send_telegram_message(message)
         time.sleep(1)
 
-
-main()
